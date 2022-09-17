@@ -1,6 +1,6 @@
 # rs-spotify-status
 
-> Configurable and easy to use Spotify status for i3bar 
+> Configurable and easy to use Spotify Status Block command for i3bar 
 
 ## Why?
 
@@ -28,7 +28,8 @@ or titles that are absurdly long. Also, it's not in Rust, so it's not blazingly 
 
 ## Installation + Usage
 
-Install with cargo (`cargo install rs-spotify-status`)
+Install with cargo (`cargo install rs-spotify-status`).
+
 Invoke with `$spotify-status`.
 
 ## Configuration
