@@ -4,7 +4,7 @@
 
 ## Why?
 
-I see a lot of configuration with a simple script like this to display the current 
+I see a lot of configurations with a simple script like this one to display the current 
 song playing on spotify in the i3bar:
 
 ```shell
@@ -25,6 +25,11 @@ fi
 
 This works 99.99% of the time, but not always. It fails on songs with multiple artists
 or titles that are absurdly long. Also, it's not in Rust, so it's not blazingly fast (/s).
+
+## Installation + Usage
+
+Install with cargo (`cargo install rs-spotify-status`)
+Invoke with `$spotify-status`.
 
 ## Configuration
 
