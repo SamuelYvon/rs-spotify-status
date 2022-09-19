@@ -109,9 +109,11 @@ fn format_for_printing(config: &Config, display_str: &str) -> String {
     let color = config.color.as_deref().unwrap_or(DEFAULT_COLOR);
     let max_length = config.max_length.unwrap_or(DEFAULT_MAX_LENGTH);
 
+    // TODO: html escape / encode
     let sized_display_str = trim_to_length(display_str, max_length);
+    let displayable_text = html_escape::encode_text(&sized_display_str); 
 
-    return format!("<span color=\"{color}\">{icon} {sized_display_str}</span>");
+    return format!("<span color=\"{color}\">{icon} {displayable_text}</span>");
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

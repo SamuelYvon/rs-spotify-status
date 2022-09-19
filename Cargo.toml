@@ -1,6 +1,6 @@
 [package]
 name = "spotify-status"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,3 +10,4 @@ dbus = "0.9.6"
 home = "0.5.3"
 serde = {version =  "1.0.144", features = ["derive"] }
 toml = "0.5.9"
+html-escape = "0.2.11"
