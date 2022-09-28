@@ -5,6 +5,7 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::time::Duration;
+use regex::Regex;
 
 const CONFIG_FILE_NAME: &str = ".spotify-status";
 
@@ -22,12 +23,16 @@ const ERR_UNABLE_TO_OPEN_CONFIG_FILE_BUT_EXISTS: &str =
 const SPOTIFY_ICON_AWESOME_FONTS: &str = "&#xf1bc;";
 const DEFAULT_COLOR: &str = "white";
 const DEFAULT_MAX_LENGTH: usize = 45;
+const DEFAULT_REMOVE_FEAT : bool = false;
+const DEFAULT_FEAT_REGEX : &str = r"\(feat\. [\w* ]*\)";
 
 #[derive(Deserialize)]
 struct Config {
     icon: Option<String>,
     color: Option<String>,
     max_length: Option<usize>,
+    remove_feat : Option<bool>,
+    feat_regex : Option<String>
 }
 
 impl Config {
@@ -37,6 +42,8 @@ impl Config {
             icon: Some(SPOTIFY_ICON_AWESOME_FONTS.to_string()),
             color: Some(DEFAULT_COLOR.to_string()),
             max_length: Some(DEFAULT_MAX_LENGTH),
+            remove_feat: Some(DEFAULT_REMOVE_FEAT),
+            feat_regex: Some(DEFAULT_FEAT_REGEX.to_string()),
         }
     }
 }
@@ -88,6 +95,27 @@ fn test_trim_to_length_above_limit() -> Result<(), String> {
     Ok(())
 }
 
+#[test]
+fn test_feat_1() -> Result<(), String> {
+    let title = "1x1 (feat. Nova Twins)";
+    let mut config = Config::default();
+    config.remove_feat = Some(true);
+    assert_eq!(remove_feat(title, &config), "1x1");
+    Ok(())
+}
+
+fn remove_feat(title : &str, config : &Config) -> String {
+    if !config.remove_feat.unwrap_or(false) {
+        return title.to_string();
+    }
+
+    let regex = config.feat_regex.as_deref().unwrap_or(DEFAULT_FEAT_REGEX);
+    let re = Regex::new(regex).unwrap();
+    let cleaned = re.replace_all(title, "");
+
+    return cleaned.trim().to_string();
+}
+
 fn trim_to_length(input: &str, max_length: usize) -> String {
     let original_str_len = input.len();
 
@@ -129,7 +157,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let metadata: PropMap = spotify_dbus_proxy.get(MPRIS_MEDIA_INTERFACE, MEDIA_METADATA_PROP)?;
 
-    let title: &String = prop_cast(&metadata, TITLE_PROPERTY).unwrap();
+    let title_from_spotify: &String = prop_cast(&metadata, TITLE_PROPERTY).unwrap();
+    let title = remove_feat(title_from_spotify, &config);
+
     let artists: &Vec<String> = prop_cast(&metadata, ARTISTS_PROPERTY).unwrap();
 
     let contents = format!("{title} (by {})", artists[0]);
