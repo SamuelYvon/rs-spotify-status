@@ -104,6 +104,15 @@ fn test_feat_1() -> Result<(), String> {
     Ok(())
 }
 
+#[test]
+fn test_trim_unicode() -> Result<(), String> {
+    let title = "SUPERNØVAØØØØØØØØØØØØØØØØ";
+    let replaced = trim_to_length(title, 30);
+    assert!(replaced.starts_with("SUPERNØVAØØ"));
+    Ok(())
+}
+
+
 fn remove_feat(title : &str, config : &Config) -> String {
     if !config.remove_feat.unwrap_or(false) {
         return title.to_string();
@@ -117,7 +126,7 @@ fn remove_feat(title : &str, config : &Config) -> String {
 }
 
 fn trim_to_length(input: &str, max_length: usize) -> String {
-    let original_str_len = input.len();
+    let original_str_len = input.chars().count();
 
     if original_str_len <= max_length {
         return String::from(input);
@@ -126,8 +135,8 @@ fn trim_to_length(input: &str, max_length: usize) -> String {
     let diff = original_str_len - max_length + 3;
     let mid_ish = original_str_len / 2;
 
-    let pre = &input[..mid_ish - diff / 2];
-    let post = &input[mid_ish + diff / 2..];
+    let pre : String = input.chars().take(mid_ish - diff / 2).collect();
+    let post : String = input.chars().skip(mid_ish + diff / 2).collect();
 
     format!("{pre}...{post}")
 }
