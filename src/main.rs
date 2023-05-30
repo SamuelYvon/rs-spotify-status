@@ -166,12 +166,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let metadata: PropMap = spotify_dbus_proxy.get(MPRIS_MEDIA_INTERFACE, MEDIA_METADATA_PROP)?;
 
-    let title_from_spotify: &String = prop_cast(&metadata, TITLE_PROPERTY).unwrap();
+    let empty_str = String::new();
+    let title_from_spotify: &String = prop_cast(&metadata, TITLE_PROPERTY).unwrap_or(&empty_str);
     let title = remove_feat(title_from_spotify, &config);
 
-    let artists: &Vec<String> = prop_cast(&metadata, ARTISTS_PROPERTY).unwrap();
+    let raw_artists : Option<&Vec<String>> = prop_cast(&metadata, ARTISTS_PROPERTY);
+    let artists: Vec<String> = match raw_artists {
+        Some(a) => a.clone(),
+        None => vec!(),
+    };
 
-    let contents = format!("{title} (by {})", artists[0]);
+    let contents = if !artists.is_empty() { format!("{title} (by {})", artists[0]) } else { empty_str };
 
     print!("{}", format_for_printing(&config, &contents));
 
