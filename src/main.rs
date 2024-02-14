@@ -150,7 +150,7 @@ fn format_for_printing(config: &Config, display_str: &str) -> String {
     let sized_display_str = trim_to_length(display_str, max_length);
     let displayable_text = html_escape::encode_text(&sized_display_str); 
 
-    return format!("<span color=\"{color}\">{icon} {displayable_text}</span>");
+    format!("<span color=\"{color}\">{icon} {displayable_text}</span>")
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
